@@ -11,9 +11,12 @@ SlackRubyBot::Client.logger.level = Logger::WARN
 
 require_relative 'lib/platform'
 require_relative 'lib/htexpand'
+require_relative 'lib/about'
 
 class BillBot::Bot < SlackRubyBot::Bot
 
 end
 
 BillBot::Bot.run
+
+

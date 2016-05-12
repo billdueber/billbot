@@ -10,7 +10,7 @@ module BillBot
     def self.call(client, data, matches)
       matches.each do |id, namespace|
         item = HTItem.new(id)
-        sayz(data, ">>> _#{item.full_title}_\n rights: '#{item.rights}', orig: #{item.orig}\n#{item.ht_links}")
+        sayz(data, ">>> _#{item.full_title}_\n rights: `#{item.rights}`, orig: #{item.orig}. Last updated #{item.last_update_date_string}\n#{item.ht_links}")
       end
     end
 
