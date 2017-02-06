@@ -10,8 +10,8 @@ class HTItem
  aeu  bc  caia  chi  coo  dul1  emu  frick  gri  hvd  ia  iau  ien  inu  keio  ku01  loc  mcg  mdl  mdp  miua  miun  mmet  mou  msu  nc01  ncs1  njp  nnc1  nnc2  nyp  osu  psia  pst  pur1  pur2  txa  txu  uc1  uc2  ucm  ucw  udel  ufl1  ufl2  uiuc  uiug  uiuo  uma  umd  umn  usu  uva  wau  wu  yale  yul
 )
   NAMESPACEMATCH = Regexp.union(NAMESPACES)
-  IDMATCHER      = /#{NAMESPACEMATCH}\.\w+/
-  ARKMATCHER     = /#{NAMESPACEMATCH}\.ark\:\/\d+\/\w+/
+  IDMATCHER      = /#{NAMESPACEMATCH}\.\w+/m
+  ARKMATCHER     = /#{NAMESPACEMATCH}\.ark\:\/\d+\/\w+/m
   SCANPAT        = Regexp.union(ARKMATCHER, IDMATCHER)
 
   EIGHT_DIGIT_DATE_PAT = /(\d{4})(\d{2})(\d{2})/
@@ -29,8 +29,18 @@ class HTItem
     "http://catalog.hathitrust.org/api/volumes/brief/htid/#{htid}.json"
   end
 
+
+  class BadHTIDError < ArgumentError; end
+
   def load_json!
     h           = JSON.parse(@client.get_content(url(htid)))
+    idstuff     = h['items'].find { |x| x['htid'] == @htid }
+
+    if h.nil? or idstuff.nil?
+      raise BadHTIDError.new("*#{htid}* looks like a HTID, but wasn't found")
+    end
+
+
     @title      = h['records'][h['records'].keys.first]['titles'].first
     idstuff     = h['items'].find { |x| x['htid'] == @htid }
     @record     = idstuff['fromRecord']
@@ -63,7 +73,7 @@ class HTItem
   end
 
   def ht_links
-    "*#{htid}*: <#{catalog_link}|Catalog> / <#{pt_link}|PT> / <#{marc_link}|MARC>"
+    "*#{htid}*: <#{catalog_link}|Catalog> / <#{pt_link}|PageTurner> / <#{marc_link}|MARC>"
   end
 
 
